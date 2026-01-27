@@ -5,78 +5,76 @@ import random
 
 pygame.init()
 screen = pygame.display.set_mode((600,600))
-player_x = 200
-player_y = 200
-keys = [False, False, False, False]
+pygame.display.set_caption("Coin collection game")
+
+#player
 player = pygame.image.load("kirby.png")
+player_rect= player.get_rect()
+player_rect.topleft=(200,200)
+
 background = pygame.image.load("background.jpeg")
-coin = pygame.image.load("coin.png")
+
+coin_img = pygame.image.load("coin.png")
 coins = []
-x= random.randint(0,600)
-y= random.randint(0,600)
 
 for i in range(10):
-    new_coin = (x,y)
-    coins.append(new_coin)
+    x= random.randint(50,550)
+    y= random.randint(50,550)
+    coin_rect = coin_img.get_rect(topleft =(x,y))
+    coins.append(coin_rect)
 
-    score = 0
-    collected_coins = pygame.sprite.spritecollide(player,coin, True)
+score = 0
+keys = [False, False, False, False]
+clock = pygame.time.Clock()
+  
+running = True
 
-    for coin in collected_coins:
-        score += 1
-        print("Score: " + "score")
-
-while player_y < 600:
+while running:
     screen.blit(background, (0,0))
-    screen.blit(player, (player_x,player_y))
+    screen.blit(player,player_rect)
+    for coin in coins:
+        screen.blit(coin_img,coin)
     pygame.display.flip()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit(0)
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == K_w:
-                keys[0]= True
-            elif event.key == K_a:
-                keys[1]= True
-            elif event.key == K_s:
-                keys[2]= True
-            elif event.key == K_d:
-                keys[3]= True
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+
+        if event.type == KEYDOWN:
+            if event.key == K_w: keys[0]= True
+            if event.key == K_a: keys[1]= True
+            if event.key == K_s: keys[2]= True
+            if event.key == K_d: keys[3]= True
         
         if event.type == pygame.KEYUP:
-            if event.key == K_w:
-                keys[0]= False
-            elif event.key == K_a:
-                keys[1]= False
-            elif event.key == K_s:
-                keys[2]= False
-            elif event.key == K_d:
-                keys[3]= False
+            if event.key == K_w: keys[0]= False
+            if event.key == K_a: keys[1]= False
+            if event.key == K_s: keys[2]= False
+            if event.key == K_d: keys[3]= False
         
-    if keys [0]:
-        if player_y >0:
-            player_y -= 2
+    if keys[0] and player_rect.top >0:
+            player_rect.y -= 3
             
-    elif keys [2]:
-        if player_y >536: 
-            player_y += 7 
-            
-    if keys [1]:
-        if player_x >0: 
-            player_x -= 2 
+    if keys[2] and player_rect.bottom <600:
+            player_rect.y += 3  
+
+    if keys[1] and player_rect.left >0:
+            player_rect.x -= 3 
             
 
-    elif keys [3]:
-        if player_x <536:  
-            player_x += 2  
+    if keys[3] and player_rect.right <600: 
+            player_rect.x += 3 
 
+    for coin in coins[:]:
+            if player_rect.colliderect(coin):
+                 coin.remove(coin) 
+                 score += 1
+                 print("Score : ", score)
 
-            player_y +=5
-            sleep(0.05)
+    clock.tick(60) 
 
-    print("Game Over")
+    pygame.quit()
+            
 
             
 
